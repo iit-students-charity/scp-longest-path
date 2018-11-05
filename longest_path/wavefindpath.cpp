@@ -14,68 +14,56 @@ extern "C" {
 
 using namespace std;
 
+vector<sc_addr> get_all_vertices();
+void find_longest_path(char, char, char);
+void DFS_chain(sc_addr , sc_addr , int*, vector<sc_addr>);
+int get_index(sc_addr);
+int get_weight(sc_addr, sc_addr);
+int to_int(sc_addr);
+
 sc_memory_context *context;
-
 sc_addr graph, rrel_arcs, rrel_nodes, arcs;
-
 vector< vector<sc_addr> > chains;
-
 vector<sc_addr> vertices;
-
-vector<sc_addr> getAllVertices();
-
-void getChainByLength(char, char, char);
-
-void DFSchain(sc_addr , sc_addr , int*, vector<sc_addr>);
-
-int getIndex(sc_addr);
-
-int getWeight(sc_addr, sc_addr);
-
-int toInt(sc_addr);
 
 int main()
 {
     sc_memory_params params;
-
     sc_memory_params_clear(&params);
     params.repo_path = "/home/alexandr/my_folder/projects/scp_longest_path/kb.bin";
     params.config_file = "/home/alexandr/my_folder/projects/scp_longest_path/config/sc-web.ini";
     params.ext_path = "/home/alexandr/my_folder/projects/scp_longest_path/sc-machine/bin/extensions";
     params.clear = SC_FALSE;
-
-    sc_memory_initialize(&params);
-
+    sc_memory_initialize(&params    );
     context = sc_memory_context_new(sc_access_lvl_make_max);
 
+    cout << "+------------------------------+" << endl;
     cout << "G0:" << endl;
-    getChainByLength('0', '2', '4');
-    cout << endl << "----------------" << endl;
+    find_longest_path('0', '2', '4');
+    cout << "+------------------------------+" << endl;
 
-    /*cout<<"G1:"<<endl<<"length of chain = 5"<<endl;
-    getChainByLength('1', 5);
-    cout<<"----------------"<<endl;
+//    cout << "G1:" << endl;
+//    find_longest_path('1', '2', '4');
+//    cout << "+------------------------------+" << endl;
 
-    cout<<"G2:"<<endl<<"length of chain = 6"<<endl;
-    getChainByLength('2', 3);
-    cout<<"----------------"<<endl;
+//    cout << "G2:" << endl;
+//    find_longest_path('2', '2', '4');
+//    cout << "+------------------------------+" << endl;
 
-    cout<<"G3:"<<endl<<"length of chain = 7"<<endl;
-    getChainByLength('3', 7);
-    cout<<"----------------"<<endl;
+//    cout << "G3:" << endl;
+//    find_longest_path('3', '2', '4');
+//    cout << "+------------------------------+" << endl;
 
-    cout<<"G4:"<<endl<<"length of chain = 3"<<endl;
-    getChainByLength('4', 3);
-    cout<<"----------------"<<endl;*/
+//    cout << "G4:" << endl;
+//    find_longest_path('4', '2', '4');
+//    cout << "+------------------------------+" << endl;
 
     sc_memory_context_free(context);
-
     sc_memory_shutdown(SC_TRUE);
-
     return 0;
 }
 
-vector<sc_addr> getAllVertices() {
+vector<sc_addr> get_all_vertices() {
     vector<sc_addr> vertices;
 
     sc_iterator5 *sc_vertices = sc_iterator5_f_a_a_a_f_new(context,
@@ -101,7 +89,7 @@ vector<sc_addr> getAllVertices() {
     return vertices;
 }
 
-void getChainByLength(char name_graph, char V1, char V2) {
+void find_longest_path(char name_graph, char V1, char V2) {
 
     char gr[3] = "Gx";
     char Vx[3] = "Vx";
@@ -127,7 +115,7 @@ void getChainByLength(char name_graph, char V1, char V2) {
     }
     sc_iterator5_free(it_arcs);
 
-    vertices = getAllVertices();
+    vertices = get_all_vertices();
     int V = vertices.size();
     int *color = new int[V];
 
@@ -136,7 +124,7 @@ void getChainByLength(char name_graph, char V1, char V2) {
     }
     vector<sc_addr> simpleChain;
     simpleChain.push_back(V1_node);
-    DFSchain(V1_node, V2_node, color, simpleChain);
+    DFS_chain(V1_node, V2_node, color, simpleChain);
 
     if(chains.size() == 0) {
         cout << "There are no chains" << endl;
@@ -148,7 +136,7 @@ void getChainByLength(char name_graph, char V1, char V2) {
     for(int i = 0; i < chains.size(); i++) {
         int weight = 0;
         for(int j = 0; j < chains[i].size() - 1; j++) {
-            weight += getWeight(chains[i][j], chains[i][j+1]);
+            weight += get_weight(chains[i][j], chains[i][j+1]);
         }
         if(weight > length) {
             length = weight;
@@ -161,14 +149,15 @@ void getChainByLength(char name_graph, char V1, char V2) {
         cout << "=>";
         if(j == chains[index].size() - 2 ) printEl(context, chains[index][j + 1]);
     }
+    cout << endl;
 }
 
-void DFSchain(sc_addr u, sc_addr endV, int *color, vector<sc_addr> simpleChain) {
+void DFS_chain(sc_addr u, sc_addr endV, int *color, vector<sc_addr> simpleChain) {
     if(SC_ADDR_IS_EQUAL(u, endV)) {
         chains.push_back(simpleChain);
         return;
     }
-    else color[getIndex(u)] = 2;
+    else color[get_index(u)] = 2;
 
     sc_iterator5 *it_vertex = sc_iterator5_f_a_a_a_f_new(context,
                               u,
@@ -179,18 +168,18 @@ void DFSchain(sc_addr u, sc_addr endV, int *color, vector<sc_addr> simpleChain) 
     if(it_vertex != NULL) {
         while (SC_TRUE == sc_iterator5_next(it_vertex)) {
             sc_addr anotherVertex = sc_iterator5_value(it_vertex, 2);
-            if (color[getIndex(anotherVertex)] == 1) {
+            if (color[get_index(anotherVertex)] == 1) {
                 vector<sc_addr> alternative = simpleChain;
                 alternative.push_back(anotherVertex);
-                DFSchain(anotherVertex, endV, color, alternative);
-                color[getIndex(anotherVertex)] = 1;
+                DFS_chain(anotherVertex, endV, color, alternative);
+                color[get_index(anotherVertex)] = 1;
             }
         }
     }
 
 }
 
-int getIndex(sc_addr vertex) {
+int get_index(sc_addr vertex) {
     int V = vertices.size();
     for(int i = 0; i < V; i++) {
         if(SC_ADDR_IS_EQUAL(vertex, vertices[i])) {
@@ -200,7 +189,7 @@ int getIndex(sc_addr vertex) {
     return -1;
 }
 
-int getWeight(sc_addr v1, sc_addr v2) {
+int get_weight(sc_addr v1, sc_addr v2) {
     sc_iterator5 *it = sc_iterator5_f_a_f_a_a_new(context,
                              v1,
                              sc_type_arc_common,
@@ -210,13 +199,13 @@ int getWeight(sc_addr v1, sc_addr v2) {
     int weight = 0;
     if (SC_TRUE == sc_iterator5_next(it)) {
         sc_addr node_weight = sc_iterator5_value(it, 4);
-        weight = toInt(node_weight);
+        weight = to_int(node_weight);
     }
     sc_iterator5_free(it);
     return weight;
 }
 
-int toInt(sc_addr element) {
+int to_int(sc_addr element) {
     int number = 0;
     sc_addr idtf;
     sc_type type;
