@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GWF version="2.0">
+    <staticSector>
+        <node type="node/const/general_node" idtf="V1" shapeColor="0" id="20691488" parent="0" left="0" top="0" right="27.0781" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="155.5" y="221.462" haveBus="false" idtf_pos="2">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+        <node type="node/const/general_node" idtf="V2" shapeColor="0" id="20659040" parent="0" left="0" top="0" right="27.0781" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="286.5" y="220.462" haveBus="false" idtf_pos="3">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+        <node type="node/const/general_node" idtf="V5" shapeColor="0" id="20641424" parent="0" left="0" top="0" right="27.0781" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="414.5" y="327.462" haveBus="false" idtf_pos="3">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+        <node type="node/const/general_node" idtf="V3" shapeColor="0" id="20675456" parent="0" left="0" top="0" right="27.0781" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="159.5" y="328.462" haveBus="false" idtf_pos="2">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+        <node type="node/const/general_node" idtf="V4" shapeColor="0" id="20707904" parent="0" left="0" top="0" right="27.0781" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" x="290.5" y="327.462" haveBus="false" idtf_pos="3">
+            <content type="0" mime_type="" content_visibility="false" file_name=""/>
+        </node>
+        <pair type="pair/const/orient" idtf="1" shapeColor="0" id="18491376" parent="0" left="0" top="0" right="17.0312" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" id_b="20707904" id_e="20659040" b_x="290.5" b_y="327.462" e_x="286.5" e_y="220.462" dotBBalance="0" dotEBalance="0">
+            <points/>
+        </pair>
+        <pair type="pair/const/orient" idtf="1" shapeColor="0" id="20773408" parent="0" left="0" top="0" right="17.0312" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" id_b="20691488" id_e="20659040" b_x="155.5" b_y="221.462" e_x="286.5" e_y="220.462" dotBBalance="0" dotEBalance="0">
+            <points/>
+        </pair>
+        <pair type="pair/const/orient" idtf="1" shapeColor="0" id="20756832" parent="0" left="0" top="0" right="17.0312" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" id_b="20659040" id_e="20641424" b_x="286.5" b_y="220.462" e_x="414.5" e_y="327.462" dotBBalance="0" dotEBalance="0">
+            <points/>
+        </pair>
+        <pair type="pair/const/orient" idtf="1" shapeColor="0" id="20789824" parent="0" left="0" top="0" right="17.0312" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" id_b="20675456" id_e="20707904" b_x="159.5" b_y="328.462" e_x="290.5" e_y="327.462" dotBBalance="0" dotEBalance="0">
+            <points/>
+        </pair>
+        <pair type="pair/const/orient" idtf="1" shapeColor="0" id="20723680" parent="0" left="0" top="0" right="17.0312" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" id_b="20707904" id_e="20641424" b_x="290.5" b_y="327.462" e_x="414.5" e_y="327.462" dotBBalance="0" dotEBalance="0">
+            <points/>
+        </pair>
+        <pair type="pair/const/orient" idtf="1" shapeColor="0" id="20740128" parent="0" left="0" top="0" right="17.0312" bottom="23" textColor="164" text_angle="0" text_font="Times New Roman [Arial]" font_size="10" id_b="20659040" id_e="20675456" b_x="286.5" b_y="220.462" e_x="159.5" e_y="328.462" dotBBalance="0" dotEBalance="0">
+            <points/>
+        </pair>
+    </staticSector>
+</GWF>
