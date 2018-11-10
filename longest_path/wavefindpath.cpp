@@ -34,29 +34,37 @@ int main()
     params.config_file = "/home/alexandr/my_folder/projects/scp_longest_path/config/sc-web.ini";
     params.ext_path = "/home/alexandr/my_folder/projects/scp_longest_path/sc-machine/bin/extensions";
     params.clear = SC_FALSE;
-    sc_memory_initialize(&params    );
+    sc_memory_initialize(&params);
     context = sc_memory_context_new(sc_access_lvl_make_max);
 
     cout << "+------------------------------+" << endl;
     cout << "G0:" << endl;
-    find_longest_path('0', '2', '4');
+    find_longest_path('0', '1', '5');
     cout << "+------------------------------+" << endl;
 
-//    cout << "G1:" << endl;
-//    find_longest_path('1', '2', '4');
-//    cout << "+------------------------------+" << endl;
+    vertices.clear();
+    chains.clear();
+    cout << "G1:" << endl;
+    find_longest_path('1', '1', '3');
+    cout << "+------------------------------+" << endl;
 
-//    cout << "G2:" << endl;
-//    find_longest_path('2', '2', '4');
-//    cout << "+------------------------------+" << endl;
+    vertices.clear();
+    chains.clear();
+    cout << "G2:" << endl;
+    find_longest_path('2', '1', '2');
+    cout << "+------------------------------+" << endl;
 
-//    cout << "G3:" << endl;
-//    find_longest_path('3', '2', '4');
-//    cout << "+------------------------------+" << endl;
+    vertices.clear();
+    chains.clear();
+    cout << "G3:" << endl;
+    find_longest_path('3', '1', '5');
+    cout << "+------------------------------+" << endl;
 
-//    cout << "G4:" << endl;
-//    find_longest_path('4', '2', '4');
-//    cout << "+------------------------------+" << endl;
+    vertices.clear();
+    chains.clear();
+    cout << "G4:" << endl;
+    find_longest_path('4', '1', '5');
+    cout << "+------------------------------+" << endl;
 
     sc_memory_context_free(context);
     sc_memory_shutdown(SC_TRUE);
@@ -64,8 +72,6 @@ int main()
 }
 
 vector<sc_addr> get_all_vertices() {
-    vector<sc_addr> vertices;
-
     sc_iterator5 *sc_vertices = sc_iterator5_f_a_a_a_f_new(context,
                              graph,
                              sc_type_arc_pos_const_perm,
@@ -90,16 +96,15 @@ vector<sc_addr> get_all_vertices() {
 }
 
 void find_longest_path(char name_graph, char V1, char V2) {
-
     char gr[3] = "Gx";
     char Vx[3] = "Vx";
     gr[1] = name_graph;
     sc_addr V1_node;
     sc_addr V2_node;
     sc_helper_resolve_system_identifier(context, gr, &graph);
-    Vx[1] = V1;
     sc_helper_resolve_system_identifier(context, "rrel_arcs", &rrel_arcs);
     sc_helper_resolve_system_identifier(context, "rrel_nodes", &rrel_nodes);
+    Vx[1] = V1;
     sc_helper_resolve_system_identifier(context, Vx, &V1_node);
     Vx[1] = V2;
     sc_helper_resolve_system_identifier(context, Vx, &V2_node);
@@ -118,22 +123,21 @@ void find_longest_path(char name_graph, char V1, char V2) {
     vertices = get_all_vertices();
     int V = vertices.size();
     int *color = new int[V];
-
     for (int k = 0; k < V; k++) {
         color[k] = 1;
     }
-    vector<sc_addr> simpleChain;
-    simpleChain.push_back(V1_node);
-    DFS_chain(V1_node, V2_node, color, simpleChain);
+    vector<sc_addr> path;
+    path.push_back(V1_node);
+    DFS_chain(V1_node, V2_node, color, path);
 
-    if(chains.size() == 0) {
-        cout << "There are no chains" << endl;
+    if (chains.size() == 0) {
+        cout << "There is no paths" << endl;
         return;
     }
 
     int length = -1;
     int index = -1;
-    for(int i = 0; i < chains.size(); i++) {
+    for (int i = 0; i < chains.size(); i++) {
         int weight = 0;
         for(int j = 0; j < chains[i].size() - 1; j++) {
             weight += get_weight(chains[i][j], chains[i][j+1]);
@@ -144,17 +148,17 @@ void find_longest_path(char name_graph, char V1, char V2) {
         }
     }
 
-    for(int j = 0; j < chains[index].size()-1; j++) {
+    for (int j = 0; j < chains[index].size()-1; j++) {
         printEl(context, chains[index][j]);
         cout << "=>";
-        if(j == chains[index].size() - 2 ) printEl(context, chains[index][j + 1]);
+        if (j == chains[index].size() - 2) printEl(context, chains[index][j + 1]);
     }
     cout << endl;
 }
 
-void DFS_chain(sc_addr u, sc_addr endV, int *color, vector<sc_addr> simpleChain) {
-    if(SC_ADDR_IS_EQUAL(u, endV)) {
-        chains.push_back(simpleChain);
+void DFS_chain(sc_addr u, sc_addr endV, int *color, vector<sc_addr> path) {
+    if (SC_ADDR_IS_EQUAL(u, endV)) {
+        chains.push_back(path);
         return;
     }
     else color[get_index(u)] = 2;
@@ -169,7 +173,7 @@ void DFS_chain(sc_addr u, sc_addr endV, int *color, vector<sc_addr> simpleChain)
         while (SC_TRUE == sc_iterator5_next(it_vertex)) {
             sc_addr anotherVertex = sc_iterator5_value(it_vertex, 2);
             if (color[get_index(anotherVertex)] == 1) {
-                vector<sc_addr> alternative = simpleChain;
+                vector<sc_addr> alternative = path;
                 alternative.push_back(anotherVertex);
                 DFS_chain(anotherVertex, endV, color, alternative);
                 color[get_index(anotherVertex)] = 1;
