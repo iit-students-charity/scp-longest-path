@@ -1,0 +1,12 @@
+graph -> G2;;
+G2 -> rrel_arcs: ..arcs;;
+G2 -> rrel_nodes: ..nodes;;
+
+..nodes -> V1;;
+..nodes -> V2;;
+
+..arcs -> (V2 => V1);;
+
+..number -> 1;;
+
+1 => (V2 => V1);;

@@ -6,18 +6,20 @@ G0 -> rrel_nodes: ..nodes;;
 ..nodes -> V2;;
 ..nodes -> V3;;
 ..nodes -> V4;;
+..nodes -> V5;;
 
-..arcs -> (V2 => V1);;
-..arcs -> (V1 => V3);;
+..arcs -> (V1 => V2);;
 ..arcs -> (V2 => V3);;
+..arcs -> (V1 => V3);;
 ..arcs -> (V3 => V4);;
+..arcs -> (V4 => V5);;
+..arcs -> (V3 => V5);;
 
-..number -> 10;;
-..number -> 2;;
-..number -> 5;;
-..number -> 4;;
+..number -> 1;;
 
-2 => (V2 => V1);;
-10 => (V1 => V3);;
-5 => (V2 => V3);;
-4 => (V3 => V4);;
+1 => (V1 => V2);;
+1 => (V2 => V3);;
+1 => (V1 => V3);;
+1 => (V3 => V4);;
+1 => (V4 => V5);;
+1 => (V3 => V5);;
