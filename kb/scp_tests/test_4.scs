@@ -1,0 +1,19 @@
+directed_graph -> graph4 (*
+  -> rrel_node: V1_4s;;
+  -> rrel_node: V2_4s;;
+  -> rrel_node: V3_4s;;
+  -> rrel_node: V4_4s;;
+  -> rrel_node: V5_4s;;
+
+  -> rrel_edge: (V1_4s => V2_4s);;
+  -> rrel_edge: (V2_4s => V3_4s);;
+  -> rrel_edge: (V2_4s => V5_4s);;
+  -> rrel_edge: (V3_4s => V4_4s);;
+  -> rrel_edge: (V4_4s => V5_4s);;
+*);;
+
+[1] => (V1_4s => V2_4s);;
+[1] => (V2_4s => V3_4s);;
+[1] => (V2_4s => V5_4s);;
+[1] => (V3_4s => V4_4s);;
+[1] => (V4_4s => V5_4s);;
