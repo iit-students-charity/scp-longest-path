@@ -1,0 +1,201 @@
+scp_program -> proc_find_all_chains (*
+
+	-> rrel_params: ... (*
+		-> rrel_1: rrel_in: _graph;;
+		-> rrel_2: rrel_in: _beg_vertex;;
+		-> rrel_3: rrel_in: _end_vertex;;
+		-> rrel_4: rrel_in: _simple_chain;;
+		-> rrel_5: rrel_in: _not_checked_vertexes;;
+	*);;
+
+	-> rrel_operators: ...(*
+
+	//Проверка равества начальной вершины цепи и конечной
+	//Если равны, то добавляем данную цепь в граф
+	//Если не равны, то продолжаем поиск (переходим к оператору удаления начальной вершины из множества проверенных вершин)	
+	-> rrel_init: ..proc_find_all_chains_if_begin_equals_end (*
+		<- ifCoin;;
+		-> rrel_1: _beg_vertex;;
+		-> rrel_2: _end_vertex;;
+		=> nrel_then: ..proc_find_all_chains_add_chain_to_graph;;
+		=> nrel_else: ..proc_find_all_chains_erase_begin_from_not_checked_vertexes;;	
+	*);;
+		
+	//Добавление цепи к графу отношением rrel_chain	(если начальная вершина == конечной вершине в предыдущем операторе)
+	//После этого выходим из программы
+	-> ..proc_find_all_chains_add_chain_to_graph (*
+		<- genElStr5;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+		-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc1;;
+		-> rrel_3: rrel_fixed: rrel_scp_var: _simple_chain;;
+		-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc2;;
+		-> rrel_5: rrel_fixed: rrel_scp_const: rrel_chain;;
+		=> nrel_goto: ..proc_find_all_chains_return;;
+	*);;
+
+	//Удаление начальной вершины _begin из множества непроверенных вершин
+	//Поиск 3-элементоной конструкции, содержащей начальную вершину (если начальная вершина != конечной вершине)
+	//В процессе поиска ищем дугу (_deleted_arc)
+	-> ..proc_find_all_chains_erase_begin_from_not_checked_vertexes (*
+		<- searchElStr3;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _not_checked_vertexes;;
+		-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _deleted_arc;;
+		-> rrel_3: rrel_fixed: rrel_scp_var: _beg_vertex;;
+		=> nrel_goto: ..proc_find_all_chains_erase_begin_vertex;;
+		=> nrel_else: ..proc_find_all_chains_return;;
+	*);;
+
+	//Удаление начальной вершины из множества непроверенных вершин путем удаления дуги, связывающей множество вершин и данную вершину (_deleted_arc)
+	//После этого переходим к поиску всех смежных вершин
+	-> ..proc_find_all_chains_erase_begin_vertex (*
+		<- eraseEl;;
+		-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
+		=> nrel_goto: ..proc_find_all_chains_get_all_adjacent_vertices;;	
+	*);;
+
+	//Добавление всех смежных начальной вершине begin вершин во множество смежных вершин _all_adjacent_vertices
+	//Если вершины будут добавлены, то переходим к следующему оператору (получение смежной вершины)
+	//Если вершины НЕ будут добавлены, то выходим из программы
+	-> ..proc_find_all_chains_get_all_adjacent_vertices (*
+		 <- searchSetStr5;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _beg_vertex;;
+		-> rrel_2: rrel_assign: rrel_common: rrel_scp_var: _arc3;;
+		-> rrel_3: rrel_assign: rrel_scp_var: _adjacent_vertices;;
+		-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc4;;
+		-> rrel_5: rrel_fixed: rrel_scp_var: _graph;;
+		->rrel_set_3: rrel_assign: rrel_scp_var: _all_adjacent_vertices;;
+		=> nrel_then: ..proc_find_all_chains_get_adjacent_vertex;;		
+		=> nrel_else: ..proc_find_all_chains_return;;	
+	*);;
+	
+	//--------------------------------------Начало цикла перебора вершин--------------------------------------
+
+	//Получение смежной вершины
+	-> ..proc_find_all_chains_get_adjacent_vertex (*
+		<- searchElStr3;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _all_adjacent_vertices;;
+		-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc_adjacent_vertex;;
+		-> rrel_3: rrel_assign: rrel_scp_var: _adjacent_vertex;;
+		=> nrel_then: ..proc_find_all_chains_erase_adjacent_vertex;; 
+		=> nrel_else: ..proc_find_all_chains_erase_all_adjacent_vertices;;
+	*);;
+
+	//Удаление пройденной вершины из множества смежных вершин путем удаления дуги, связывающей множество вершин и данную вершину
+	//Переход к оператору получения следующей смежной вершины
+	-> ..proc_find_all_chains_erase_adjacent_vertex (*
+		<- eraseEl;;
+		-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _arc_adjacent_vertex;;
+		=> nrel_goto: ..proc_find_all_chains_if_vertex_not_checked;;
+	*);;
+
+	//Проверка на принадлежность смежной вершины множеству непроверенных вершин (проходили ли мы уже через эту вершину)
+	//Если проходили, то удаляем эту вершину из списка смежных и переходим к следующей вершине (вершина не найдена во множестве _not_checked_vertexes)
+	//Если не проходили, то добавляем эту вершину в _copy_chain, которая является копией simple_chain (вершина найдена во множестве _not_checked_vertexes)
+	-> ..proc_find_all_chains_if_vertex_not_checked (*
+		<- searchElStr3;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _not_checked_vertexes;;
+		-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc_between_not_checked_vertexes_and_adjacent_vertex;;
+		-> rrel_3: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+		=> nrel_then: ..proc_find_all_chains_create_copy_chain;;
+		=> nrel_else: ..proc_find_all_chains_find_vertex_AV;; 
+	*);;
+
+	-> ..proc_find_all_chains_find_vertex_AV (*
+		<- searchElStr3;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _all_adjacent_vertices;;
+		-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc_between_adjacent_vertices_and_adjacent_vertex;;
+		-> rrel_3: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+		=> nrel_then: ..proc_find_all_chains_erase_adjacent_vertex_from_AV;;
+		=> nrel_else: ..proc_find_all_chains_return;; 
+	*);;
+
+	//Удаление пройденной вершины из множества смежных вершин путем удаления дуги, связывающей множество вершин и данную вершину
+	//Переход к оператору получения следующей смежной вершины
+	-> ..proc_find_all_chains_erase_adjacent_vertex_from_AV (*
+		<- eraseEl;;
+		-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _arc_between_adjacent_vertices_and_adjacent_vertex;;
+		=> nrel_goto: ..proc_find_all_chains_get_adjacent_vertex;;	
+	*);;
+
+	//Оператор генерации простой цепи (является копией _simple_chain)
+	//После генерации узла, переходим к копированию цепи
+	-> ..proc_find_all_chains_create_copy_chain (*
+		<- genEl;;
+		-> rrel_1: rrel_assign: rrel_node: rrel_scp_var: _copy_chain;;
+		=> nrel_goto: ..proc_find_all_chains_call_copy_chain;;
+	*);;
+
+	-> ..proc_find_all_chains_call_copy_chain (*
+		<- call;;
+		-> rrel_1: rrel_fixed: rrel_scp_const: proc_copy_chain;;
+		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+			-> rrel_1: rrel_fixed: rrel_scp_var: _simple_chain;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _copy_chain;;
+		*);;
+		-> rrel_3: rrel_assign: rrel_scp_var: _descr0;;
+		=> nrel_goto: ..proc_find_all_chains_wait_copy_chain;;
+	*);;
+
+	//Ожидание завершения рекурсивного вызова
+	-> ..proc_find_all_chains_wait_copy_chain (*
+		<- waitReturn;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _descr0;;
+		=> nrel_goto: ..proc_find_all_chains_add_adjacent_vertex;;
+	*);;
+
+	//Оператор добавления смежной вершины в цепь
+	-> ..proc_find_all_chains_add_adjacent_vertex (*
+		<- genElStr5;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _beg_vertex;;
+		-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _arc1;;
+		-> rrel_3: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+		-> rrel_4: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc2;;
+		-> rrel_5: rrel_fixed: rrel_scp_var: _copy_chain;;
+		=> nrel_goto: ..proc_find_all_chains_call_recursive;;
+	*);;
+
+	//Рекурсивный вызов программы 
+	-> ..proc_find_all_chains_call_recursive (*
+		<- call;;
+		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_all_chains;;
+		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+			-> rrel_3: rrel_fixed: rrel_scp_var: _end_vertex;;
+			-> rrel_4: rrel_fixed: rrel_scp_var: _copy_chain;;
+			-> rrel_5: rrel_fixed: rrel_scp_var: _not_checked_vertexes;;
+		*);;
+		-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
+		=> nrel_goto: ..proc_find_all_chains_create_arc_between_begin_and_not_checked_vertex;;
+	*);;
+
+	//Ожидание завершения рекурсивного вызова
+	//Переход к добавлению дуги между множеством непроверенных вершин и начальной
+	-> ..proc_find_all_chains_create_arc_between_begin_and_not_checked_vertex (*
+		<- waitReturn;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
+		=> nrel_goto: ..proc_find_all_chains_create_arc;;
+	*);;
+		
+	-> ..proc_find_all_chains_create_arc (*
+		<- genElStr3;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: _not_checked_vertexes;;
+		-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_between_not_checked_vertexes_and_adjacent_vertex_rewrite;;
+		-> rrel_3: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+		=> nrel_goto: ..proc_find_all_chains_get_adjacent_vertex;;
+	*);;
+
+	//Очистка памяти путем удаления множества _all_adjacent_vertices (если в предыдущем операторе не было найдено ни одной смежной вершины)
+	-> ..proc_find_all_chains_erase_all_adjacent_vertices (*
+		<- eraseEl;;
+		-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _all_adjacent_vertices;;
+		=> nrel_goto: ..proc_find_all_chains_return;;
+	*);;
+	
+	//Оператор return
+	-> ..proc_find_all_chains_return (*
+		<- return;;
+	*);;
+		
+	*);;
+*);;

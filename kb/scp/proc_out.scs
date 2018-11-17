@@ -1,0 +1,160 @@
+scp_program -> proc_out (*	
+	-> rrel_params: ... (*
+		-> rrel_1: rrel_in: _graph;;
+	*);;
+
+	-> rrel_operators: ... (*
+
+		//Создание множества всех цепей, принадлежащих графу
+		//Если множество непустое, то находим первую цепь
+		//Если множество пустое, то выводим информацию о том, что цепей нет
+		-> rrel_init: ..proc_out_create_all_chains (*
+			<- searchSetStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _vertex_1;;
+			-> rrel_4: rrel_assign: rrel_scp_var: _arc2;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_chain;;
+			->rrel_set_3: rrel_assign: rrel_scp_var: _all_chains;;
+			=> nrel_then: ..proc_out_get_chain;;		
+			=> nrel_else: ..proc_out_print_not_exists;;	
+		*);;
+
+		//Оператор вывода ("There are no chains")
+		//Затем выход из программы
+		-> ..proc_out_print_not_exists (*
+			<- printNl;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: [There are no chains];; 		
+			=> nrel_goto: ..proc_out_return;;	
+		*);;
+
+		//Поиск цепи во множестве всех цепей
+		//Если цепь найдена, то удаляем дугу между этой цепью и множество всех цепей
+		//Если цепь не найдена, то удаляем множесто _all_chains
+		-> ..proc_out_get_chain (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _all_chains;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _deleted_arc;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _chain;;
+			=> nrel_then: ..proc_out_delete_arc;;
+			=> nrel_else: ..proc_out_clear;;
+		*);;
+
+		//Удаление дуги между цепью и множеством всех цепей
+		//Переход к получению первой вершины в цепи _chain
+		-> ..proc_out_delete_arc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
+			=> nrel_goto: ..proc_out_get_first_vertex;;	
+		*);;
+
+		//Оператор нахождения первой вершины в цепи
+		//Если вершина найдена, то переходим к выводу этой вершины
+		//Если вершина не найдена, то переходим очистки памяти и выходу из программы (но такого быть не может (скорее всего))
+		-> ..proc_out_get_first_vertex (*
+			<- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _chain;;
+			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _begin_vertex;;
+			-> rrel_4: rrel_assign: rrel_scp_var: _arc2;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_next;;
+			=> nrel_then: ..proc_out_print_vertex;;
+			=> nrel_else: ..proc_out_clear;;
+		*);;
+
+		//Удаление множества всех вершин
+		//Переход к return
+		-> ..proc_out_clear (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _all_chains;;
+			=> nrel_goto: ..proc_out_return;;	
+		*);;
+
+		//Поиск идентификатора печатываемой вершины
+		//Переход к самому оператору печати
+		-> ..proc_out_print_vertex (*
+			 <- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
+			-> rrel_2: rrel_assign: rrel_const: rrel_common: rrel_scp_var: _arc2;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _print_value;;
+			-> rrel_4: rrel_assign: rrel_pos: rrel_scp_var: _arc4;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: nrel_system_identifier;;
+			=> nrel_then: ..proc_out_print_vertex_value;;		
+		 	=> nrel_else: ..proc_out_clear;;
+		*);;
+
+		//Оператор вывода первой вершины
+		//Переход к нахождению следующей вершины
+		->..proc_out_print_vertex_value (*
+			<-print;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _print_value;;
+			=>nrel_goto: ..proc_out_get_next_vertex;;
+		*);;
+
+		//Оператор нахождения следующей вершины в цепи
+		//Если вершина найдена, то переходим к выводу сначала "=>", затем выводу найденной вершины
+		//Если вершина не найдена, то переходим к выводу следующей цепи
+		-> ..proc_out_get_next_vertex (*
+			<- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
+			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _next_vertex;;
+			-> rrel_4: rrel_assign: rrel_scp_var: _arc2;;
+			-> rrel_5: rrel_fixed: rrel_scp_var: _chain;;
+			=> nrel_then: ..proc_out_print_common_arc;;
+			=> nrel_else: ..proc_out_print_new_line;;
+		*);;
+
+		//Оператор вывода ("=>")
+		//Переход к выводу следующей вершины
+		-> ..proc_out_print_common_arc (*
+			<- print;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: [=>];; 		
+			=> nrel_goto: ..proc_out_print_next_vertex;;	
+		*);;
+
+		//Поиск идентификатора печатываемой вершины
+		//Переход к самому оператору печати
+		-> ..proc_out_print_next_vertex (*
+			 <- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _next_vertex;;
+			-> rrel_2: rrel_assign: rrel_const: rrel_common: rrel_scp_var: _arc2;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _print_value;;
+			-> rrel_4: rrel_assign: rrel_pos: rrel_scp_var: _arc4;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: nrel_system_identifier;;
+			=> nrel_then: ..proc_out_print_next_vertex_value;;		
+		 	=> nrel_else: ..proc_out_print_new_line;;
+		*);;
+
+		//Оператор вывода первой вершины
+		//Переход к присваиванию следующей вершины текущей (_begin_vertex = _next_vertex)
+		->..proc_out_print_next_vertex_value (*
+			<-print;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _print_value;;
+			=>nrel_goto: ..proc_out_change_value_of_begin_vertex;;
+		*);;
+
+		//_begin_vertex = _next_vertex
+		//Переход к оператору получения следующей вершины
+		->..proc_out_change_value_of_begin_vertex (*
+			<-varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _begin_vertex;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _next_vertex;;
+			=>nrel_goto: ..proc_out_get_next_vertex;;
+		*);;
+
+		//Переход на новую строку
+		//После этого переходим к оператору получения следующей цепи
+		-> ..proc_out_print_new_line (*
+			<- printNl;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: [ ];; 		
+			=> nrel_goto: ..proc_out_get_chain;;	
+		*);;
+
+		//Оператор return
+		-> ..proc_out_return (*
+			<- return;;
+		*);;
+
+	*);;
+*);;
