@@ -1,5 +1,8 @@
+
+//Программа вывода всех цепей
 scp_program -> proc_out (*	
 	-> rrel_params: ... (*
+		//Узел графа
 		-> rrel_1: rrel_in: _graph;;
 	*);;
 
@@ -20,13 +23,15 @@ scp_program -> proc_out (*
 			=> nrel_else: ..proc_out_print_not_exists;;	
 		*);;
 
-		//Оператор вывода ("There are no chains")
+		//Оператор вывода ("Цепей нет")
 		//Затем выход из программы
 		-> ..proc_out_print_not_exists (*
 			<- printNl;;
-			-> rrel_1: rrel_fixed: rrel_scp_const: [There are no chains];; 		
+			-> rrel_1: rrel_fixed: rrel_scp_const: [Цепей нет];; 		
 			=> nrel_goto: ..proc_out_return;;	
 		*);;
+
+		//---------------------Перебор всех цепей----------------------
 
 		//Поиск цепи во множестве всех цепей
 		//Если цепь найдена, то удаляем дугу между этой цепью и множество всех цепей
@@ -48,9 +53,11 @@ scp_program -> proc_out (*
 			=> nrel_goto: ..proc_out_get_first_vertex;;	
 		*);;
 
+		//----------------Перебор всех вершин цепи----------------------
+
 		//Оператор нахождения первой вершины в цепи
 		//Если вершина найдена, то переходим к выводу этой вершины
-		//Если вершина не найдена, то переходим очистки памяти и выходу из программы (но такого быть не может (скорее всего))
+		//Если вершина не найдена, то переходим очистки памяти и выходу из программы (Условие невыполнимо)
 		-> ..proc_out_get_first_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _chain;;
@@ -70,8 +77,8 @@ scp_program -> proc_out (*
 			=> nrel_goto: ..proc_out_return;;	
 		*);;
 
-		//Поиск идентификатора печатываемой вершины
-		//Переход к самому оператору печати
+		//Поиск идентификатора вершины
+		//Переход к оператору печати
 		-> ..proc_out_print_vertex (*
 			 <- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
@@ -113,8 +120,8 @@ scp_program -> proc_out (*
 			=> nrel_goto: ..proc_out_print_next_vertex;;	
 		*);;
 
-		//Поиск идентификатора печатываемой вершины
-		//Переход к самому оператору печати
+		//Поиск идентификатора вершины
+		//Переход к оператору печати
 		-> ..proc_out_print_next_vertex (*
 			 <- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _next_vertex;;
@@ -126,7 +133,7 @@ scp_program -> proc_out (*
 		 	=> nrel_else: ..proc_out_print_new_line;;
 		*);;
 
-		//Оператор вывода первой вершины
+		//Оператор вывода вершины
 		//Переход к присваиванию следующей вершины текущей (_begin_vertex = _next_vertex)
 		->..proc_out_print_next_vertex_value (*
 			<-print;;

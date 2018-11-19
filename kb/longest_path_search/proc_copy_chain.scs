@@ -1,6 +1,10 @@
+
+//Программа копирования цепи
 scp_program -> proc_copy_chain (*	
 	-> rrel_params: ... (*
+		//Цепь, из которой нужно скопировать вершины
 		-> rrel_1: rrel_in: _chain;;
+		//Цепь, в которую нужно скопировать вершины
 		-> rrel_2: rrel_in: _copy;;
 	*);;
 
@@ -8,6 +12,7 @@ scp_program -> proc_copy_chain (*
 
 		//Оператор поиска начальной вершины
 		//После этого переходим к добавлению начальной вершины в _copy
+		//Случай, когда не найдена начальная вершина невозможен
 		-> rrel_init: ..proc_copy_chain_find_first_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _chain;;
@@ -19,7 +24,7 @@ scp_program -> proc_copy_chain (*
 			=> nrel_else: ..proc_copy_chain_return;;
 		*);;
 
-		//Оператор добавления первой вершины в цепи
+		//Оператор добавления первой вершины в новую цепь
 		//Переход к следующему оператору (добавление всех остальных вершин)
 		-> ..proc_copy_chain_add_first_vertex (*
 			<- genElStr5;;
@@ -35,7 +40,7 @@ scp_program -> proc_copy_chain (*
 
 		//Оператор нахождения следующей вершины в цепи
 		//Если вершина найдена, то переходим к добавлению данной вершины
-		//Если вершина не найдена, то переходим выходим из программы
+		//Если вершина не найдена, то выходим из программы
 		-> ..proc_copy_chain_get_next_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
@@ -58,6 +63,7 @@ scp_program -> proc_copy_chain (*
 			=> nrel_goto: ..proc_copy_chain_change_value_of_begin_vertex;;
 		*);;
 
+		//Оператор занесение в _begin_vertex нового значения
 		//_begin_vertex = _next_vertex
 		//Переход к оператору получения следующей вершины
 		->..proc_copy_chain_change_value_of_begin_vertex (*

@@ -1,11 +1,21 @@
+
+//Программа запуска всех тестов
 scp_program -> proc_run_all_tests (*
 	
 	-> rrel_params: ... ;;
 
 	-> rrel_operators: ... (*
 
+	//Сообщение о начале программы
+	//Переход к выполнению 1 теста
+	-> rrel_init: ..proc_run_all_tests_print_begin (*
+		<- printNl;;
+		-> rrel_1: rrel_fixed: rrel_scp_const: [Начало программы];; 		
+		=> nrel_goto: ..proc_run_all_tests_run_test_1;;	
+	*);;
+
 	//Вызов первого теста
-	-> rrel_init: ..proc_run_test_1 (*
+	-> ..proc_run_all_tests_run_test_1 (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
@@ -22,13 +32,14 @@ scp_program -> proc_run_all_tests (*
 	
 	//Ожидание завершения первого теста
 	//Переход к вызову следующего теста
+	//Последующие операторы аналогичны для двух начальных операторов
 	-> ..proc_run_all_tests_wait_test_1 (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-		=> nrel_goto: ..proc_run_all_tests_operator_return;; //Поменять на proc_run_test_2!!!!!!!!!!!!!!!!!!
+		=> nrel_goto: ..proc_run_all_tests_run_test_2;;
 	*);;
 		
-	/*-> ..proc_run_test_2 (*
+	-> ..proc_run_all_tests_run_test_2 (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
@@ -43,15 +54,15 @@ scp_program -> proc_run_all_tests (*
 	-> ..proc_run_all_tests_wait_test_2 (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-		=> nrel_goto: ..proc_run_test_3;;
+		=> nrel_goto: ..proc_run_all_tests_run_test_3;;
 	*);;
 	
-	-> ..proc_run_test_3 (*
+	-> ..proc_run_all_tests_run_test_3 (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 			-> rrel_1: rrel_fixed: rrel_scp_const: graph3;;
-			-> rrel_2: rrel_fixed: rrel_scp_const: [3];;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [6];;
 			-> rrel_3: rrel_fixed: rrel_scp_const: [3];;
 		*);;
 		-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
@@ -61,10 +72,10 @@ scp_program -> proc_run_all_tests (*
 	-> ..proc_run_all_tests_wait_test_3 (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-		=> nrel_goto: ..proc_run_test_4;;
+		=> nrel_goto: ..proc_run_all_tests_run_test_4;;
 	*);;
 
-	-> ..proc_run_test_4 (*
+	-> ..proc_run_all_tests_run_test_4 (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
@@ -79,10 +90,10 @@ scp_program -> proc_run_all_tests (*
 	-> ..proc_run_all_tests_wait_test_4 (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-		=> nrel_goto: ..proc_run_test_5;;
+		=> nrel_goto: ..proc_run_all_tests_test_5;;
 	*);;
 		
-	-> ..proc_run_test_5 (*
+	-> ..proc_run_all_tests_test_5 (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
@@ -97,10 +108,17 @@ scp_program -> proc_run_all_tests (*
 	-> ..proc_run_all_tests_wait_test_5 (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-		=> nrel_goto: ..proc_run_all_tests_operator_return;;
-	*);;*/
+		=> nrel_goto: ..proc_run_all_tests_print_end;;
+	*);;
 
+	//Сообщение о завершении программы
+	-> ..proc_run_all_tests_print_end (*
+		<- printNl;;
+		-> rrel_1: rrel_fixed: rrel_scp_const: [Программа завершена];; 		
+		=> nrel_goto: ..proc_run_all_tests_operator_return;;	
+	*);;
 
+	//Оператор return
 	-> ..proc_run_all_tests_operator_return (*
 		<- return;;
 	*);;

@@ -1,5 +1,8 @@
+
+//Программа очистки памяти
 scp_program -> proc_clear (*	
 	-> rrel_params: ... (*
+		//Узел графа
 		-> rrel_1: rrel_in: _graph;;
 	*);;
 
@@ -14,15 +17,15 @@ scp_program -> proc_clear (*
 			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _vertex_1;;
 			-> rrel_4: rrel_assign: rrel_scp_var: _arc2;;
-			-> rrel_5: rrel_fixed: rrel_pos_const_perm: rrel_scp_const: rrel_chain;;
+			-> rrel_5: rrel_fixed:  rrel_scp_const: rrel_chain;;
 			->rrel_set_3: rrel_assign: rrel_scp_var: _all_chains;;
 			=> nrel_then: ..proc_clear_get_chain;;		
-			=> nrel_else: ..proc_clear_delete_all_chains;;	
+			=> nrel_else: ..proc_clear_return;;	
 		*);;
 
 		//Поиск цепи во множестве всех цепей
 		//Если цепь найдена, то удаляем эту цепь
-		//Если цепь не найдена, то очищаем память
+		//Если цепь не найдена, то очищаем память от _all_chains
 		-> ..proc_clear_get_chain (*
 			<- searchElStr3;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _all_chains;;
@@ -41,18 +44,10 @@ scp_program -> proc_clear (*
 		*);;
 
 		//Удаление _all_chains
-		//Переход к удалению rrel_chain
+		//Переход к выходу из программы
 		-> ..proc_clear_delete_all_chains (*
 			<- eraseEl;;
 			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _all_chains;;
-			=> nrel_goto: ..proc_clear_print;;	
-		*);;
-
-		//Вывод строки о завершении работы
-		//Переход к return
-		-> ..proc_clear_print (*
-			<- print;;
-			-> rrel_1: rrel_fixed: rrel_scp_const: [Память очищена];; 		
 			=> nrel_goto: ..proc_clear_return;;	
 		*);;
 

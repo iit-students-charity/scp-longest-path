@@ -1,7 +1,11 @@
+
+//Программа удаления цепей, длина которых != заданной длине
 scp_program -> proc_sift_chains (*	
 	-> rrel_params: ... (*
+		//Узел графа
 		-> rrel_1: rrel_in: _graph;;
-		-> rrel_1: rrel_in: _neccessary_length;;
+		//Заданная цепь (sc-ссылка)
+		-> rrel_2: rrel_in: _neccessary_length;;
 	*);;
 
 	-> rrel_operators: ... (*
@@ -15,55 +19,48 @@ scp_program -> proc_sift_chains (*
 			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _vertex_1;;
 			-> rrel_4: rrel_assign: rrel_scp_var: _arc2;;
-			-> rrel_5: rrel_fixed: rrel_pos_const_perm: rrel_scp_const: rrel_chain;;
+			-> rrel_5: rrel_fixed:  rrel_scp_const: rrel_chain;;
 			->rrel_set_3: rrel_assign: rrel_scp_var: _all_chains;;
 			=> nrel_then: ..proc_sift_chains_get_chain;;		
-			=> nrel_else: ..proc_sift_chains_print;;	
+			=> nrel_else: ..proc_sift_chains_return;;	
 		*);;
 
+		//---------------Перебор всех цепей-------------
+
 		//Поиск цепи во множестве всех цепей
-		//Если цепь найдена, то удаляем дугу между этой цепью и множество всех цепей
-		//Если цепь не найдена, то удаляем множесто _all_chains
+		//Если цепь найдена, то удаляем дугу между этой цепью и множеством всех цепей
+		//Если цепь не найдена, то удаляем множесто _all_chains и выходим из программы
 		-> ..proc_sift_chains_get_chain (*
 			<- searchElStr3;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _all_chains;;
-			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _deleted_arc;;
+			-> rrel_2: rrel_assign: rrel_scp_var: _deleted_arc;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _chain;;
 			=> nrel_then: ..proc_sift_chains_delete_arc;;
 			=> nrel_else: ..proc_sift_chains_clear;;
 		*);;
 
-		//Удаление множества всех вершин
-		//Переход к return
-		-> ..proc_sift_chains_clear (*
-			<- eraseEl;;
-			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _all_chains;;
-			=> nrel_goto: ..proc_sift_chains_print;;	
-		*);;
-
-		//Вывод сообщения
-		//После этого выходим из программы
-		-> ..proc_sift_chains_print (*
-			<- printNl;;
-			-> rrel_1: rrel_fixed: rrel_scp_const: [Проверка завершена];; 		
-			=> nrel_goto: ..proc_sift_chains_return;;	
-		*);;
-
 		//Удаление дуги между цепью и множеством всех цепей
-		//Переход к вызову функции proc_length, которая вычисляет длину цепи _chain
+		//Переход к вызову функции proc_length, которая вычисляет длину цепи _chain (перед этим создадим переменную _length, в которой будем хранить длину цепи _chain)
 		-> ..proc_sift_chains_delete_arc (*
 			<- eraseEl;;
 			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
-			=> nrel_goto: ..proc_sift_chains_get_length;;	
+			=> nrel_goto: ..proc_sift_chains_generate_length;;	
 		*);;
 
-		//Вызов программы proc_length
+		//Оператор создания переменной, хранящей длину цепи
+		-> ..proc_sift_chains_generate_length (*
+			<- genEl;;
+			-> rrel_1: rrel_assign: rrel_node: rrel_scp_var: _length;;
+			=> nrel_goto: ..proc_sift_chains_get_length;;
+		*);;
+
+		//Вызов программы proc_length, которая вычисляет длину цепи
 		-> ..proc_sift_chains_get_length (*
 			<- call;;
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_length;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
-				//Обрабатываемая цепь
-				-> rrel_1: rrel_fixed: rrel_scp_const: _chain;;
+				//Цепь, длину которой нужно найти
+				-> rrel_1: rrel_fixed: rrel_scp_var: _chain;;
 				//Длина цепи
 				-> rrel_2: rrel_assign: rrel_scp_var: _length;;
 			*);;
@@ -76,7 +73,7 @@ scp_program -> proc_sift_chains (*
 		-> ..proc_sift_chains_wait (*
 			<- waitReturn;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-			=> nrel_goto: ..proc_sift_if_equals;; //Поменять на proc_run_test_2!!!!!!!!!!!!!!!!!!
+			=> nrel_goto: ..proc_sift_if_equals;;
 		*);;
 
 		//Сравнение длины цепи и заданной длины
@@ -84,17 +81,25 @@ scp_program -> proc_sift_chains (*
 		//Если они не равны, то удаляем _chain и переходим к следующей цепи
 		-> ..proc_sift_if_equals (*
 			<- ifEq;;
-			-> rrel_1: _length;;
-			-> rrel_2: _neccessary_length;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _neccessary_length;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
 			=> nrel_then: ..proc_sift_chains_get_chain;;
-			=> nrel_else: ..proc_sift_if_equals_delete_chain;;
+			=> nrel_else: ..proc_sift_delete_chain;;
 		*);;
 
 		//Удаление цепи _chain и переход к следующей цепи
-		-> ..proc_sift_if_equals_delete_chain (*
+		-> ..proc_sift_delete_chain (*
 			<- eraseEl;;
-			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _chain;;
 			=> nrel_goto: ..proc_sift_chains_get_chain;;	
+		*);;
+
+		//Удаление множества всех вершин
+		//Переход к return
+		-> ..proc_sift_chains_clear (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _all_chains;;
+			=> nrel_goto: ..proc_sift_chains_return;;	
 		*);;
 
 		//Оператор return

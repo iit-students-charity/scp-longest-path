@@ -1,35 +1,40 @@
+
 //Программа поиска всех цепей заданной длины в ориентированном взвешенном графе
 scp_program -> proc_find_chains_by_length (*
 	
 	-> rrel_params: ... (*
+
 		//Узел, содержащий исходный граф
 		-> rrel_1: rrel_in: _graph;;
+
 		//Длина необходимых цепей (sc-ссылка)
 		-> rrel_2: rrel_in: _length;;
+
 		//Номер теста (sc-ссылка)
 		-> rrel_3: rrel_in: _test_number;;
+
 	*);;
 
 	-> rrel_operators: ... (*
 
-	//Начальный оператор (выводит строку ---------------Test)
+	//Начальный оператор (выводит строку ----------Тест )
 	//Переход к оператору вывода номера теста
 	-> rrel_init: ..proc_find_chains_by_length_start (*
 		<- print;;
-		-> rrel_1: rrel_fixed: rrel_scp_const: [---------------Test ];; 		
+		-> rrel_1: rrel_fixed: rrel_scp_const: [----------Тест ];; 		
 		=> nrel_goto: ..proc_find_chains_by_length_print_test_numbers;;	
 	*);;
 
 	//Оператор вывода номера теста
-	//Переход к оператору занесения всех вершин во множество
+	//Переход к оператору занесения всех вершин во множество _all_begin_vertices
 	-> ..proc_find_chains_by_length_print_test_numbers (*
 		<- printNl;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _test_number;; 		
 		=> nrel_goto: ..proc_find_chains_by_length_get_all_begin_vertices;;	
 	*);;
 
-	//Оператор поиска всех начальных вершин в графе
-	//В случае, если не будет найдено ни одной вершины, выходим из программы (такое вряд ли сможет произойти)
+	//Оператор поиска всех начальных вершин (множество содержит все начальные вершины цепей)
+	//В случае, если не будет найдено ни одной вершины, выходим из программы (может произойти в случае, если граф не имеет вершин)
 	//Если найдено множество, то переходим к следующему пункту (получение начальной вершины)
 	-> ..proc_find_chains_by_length_get_all_begin_vertices (*
 		 <- searchSetStr5;;
@@ -43,9 +48,9 @@ scp_program -> proc_find_chains_by_length (*
 		=> nrel_else: ..proc_find_all_chains_by_length_return;;	
 	*);;
 
-
 	//--------------------------------------Начало внешнего цикла----------------------------------------
-	//Оператор поиска первой вершины _begin (может быть произвольной)
+
+	//Оператор поиска первой вершины _begin
 	//Если найдена вершина переходим к поиску второй вершины, которая будет концом цепи (при этом начальная вершина не должна совпадать с конечной)
 	//При этом удалим вершину _begin из множества _all_begin_vertices
 	//Если не будет найдено начальной вершины, то очищаем память и продолжаем выполнение алгоритма (ветвь else, см. ниже)
@@ -61,7 +66,7 @@ scp_program -> proc_find_chains_by_length (*
 	//--------------------------------------Ветвь then внешнего цикла----------------------------------------
 
 	//Удаление начальной вершины из множества всех вершин путем удаления дуги, связывающей множество вершин и данную вершину (_deleted_arc)
-	//После этого переходим к созданию множества всех конечных вершин
+	//После этого переходим к созданию множества всех конечных вершин (это множетсво будет создаваться каждый раз, когда выбирается новая начальная вершина)
 	-> ..proc_find_all_chains_by_length_delete_begin_vertex (*
 		<- eraseEl;;
 		-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
@@ -69,7 +74,7 @@ scp_program -> proc_find_chains_by_length (*
 	*);;
 
 	//Оператор поиска всех конечных вершин в графе
-	//В случае, если не будет найдено ни одной вершины, выходим из программы (такое вряд ли сможет произойти)
+	//В случае, если не будет найдено ни одной вершины, выходим из программы (условие недостижимо)
 	//Если найдено множество, то переходим к следующему пункту удаление _begin из этого множества
 	-> ..proc_find_all_chains_by_length_create_set_all_end_vertices (*
 		 <- searchSetStr5;;
@@ -80,21 +85,22 @@ scp_program -> proc_find_chains_by_length (*
 		-> rrel_5: rrel_fixed: rrel_scp_const: rrel_node;;
 		->rrel_set_3: rrel_assign: rrel_scp_var: _all_end_vertices;;
 		=> nrel_then: ..proc_find_all_chains_by_length_find_begin_vertex_in_all_end_vertices;;		
-		=> nrel_else: ..proc_find_all_chains_by_length_return;;	
+		=> nrel_else: ..proc_find_all_chains_by_length_erase_all_begin_vertices;;	
 	*);;
 
 	//Оператор поиска _begin в _all_end_vertices
+	//Случай, когда дуга не будет найдена невозможен
 	-> ..proc_find_all_chains_by_length_find_begin_vertex_in_all_end_vertices (*
 		<- searchElStr3;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _all_end_vertices;;
 		-> rrel_2: rrel_assign: rrel_scp_var: _deleted_arc;;
 		-> rrel_3: rrel_fixed: rrel_scp_var: _begin_vertex;;
 		=> nrel_then: ..proc_find_all_chains_by_length_delete_begin_vertex_in_all_end_vertices;;
-		=> nrel_else: ..proc_find_all_chains_by_length_return;;
+		=> nrel_else: ..proc_find_all_chains_by_length_erase_all_begin_vertices;;
 	*);;
 
 	//Удаление _begin из _all_end_vertices
-	//Переход к поиску конечной вершины
+	//Переход к поиску конечной вершины (вход во внутренний цикл)
 	-> ..proc_find_all_chains_by_length_delete_begin_vertex_in_all_end_vertices (*
 		<- eraseEl;;
 		-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
@@ -110,7 +116,7 @@ scp_program -> proc_find_chains_by_length (*
 		<- searchElStr3;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _all_end_vertices;;
 		-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _deleted_arc;;
-		-> rrel_3: rrel_assign: rrel_scp_var: _another_vertex;;
+		-> rrel_3: rrel_assign: rrel_scp_var: _end_vertex;;
 		=> nrel_then: ..proc_find_all_chains_by_length_delete_end_vertex_in_all_end_vertex;;
 		=> nrel_else: ..proc_find_all_chains_by_length_erase_all_end_vertices;;
 	*);;
@@ -131,9 +137,9 @@ scp_program -> proc_find_chains_by_length (*
 		=> nrel_goto: ..proc_find_all_chains_by_length_create_set_not_checked_vertices;;	
 	*);;
 
-	//Оператор создания множества всех непроверенных вершин (непроверенными вершинами будут считаться все на данном этапе)
+	//Оператор создания множества всех непроверенных вершин (непроверенными вершинами будут считаться все вершины графа)
 	//Если такое множество создано, то переходим к созданию простой цепи, в которую занесем начальную вершину
-	//Если нет, то выходим из программы (условие невыполнимо)
+	//Условие, когда не будет создано множество непроверенных вершин, невыполнимо
 	-> ..proc_find_all_chains_by_length_create_set_not_checked_vertices (*
 		 <- searchSetStr5;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
@@ -143,7 +149,7 @@ scp_program -> proc_find_chains_by_length (*
 		-> rrel_5: rrel_fixed: rrel_scp_const: rrel_node;;
 		->rrel_set_3: rrel_assign: rrel_scp_var: _not_checked_vertices;;
 		=> nrel_then: ..proc_find_all_chains_by_length_create_simple_chain;;
-		=> nrel_else: ..proc_find_all_chains_by_length_return;;	
+		=> nrel_else: ..proc_find_all_chains_by_length_erase_all_begin_vertices;;	
 	*);;
 
 	//Оператор генерации простой цепи
@@ -154,7 +160,7 @@ scp_program -> proc_find_chains_by_length (*
 		=> nrel_goto: ..proc_find_all_chains_by_length_add_first_vertex;;
 	*);;
 
-	//Оператор создания начальной вершины
+	//Оператор добавления начальной вершины в созданную цепь
 	//После этого переходим к вызову программы proc_find_all_chains
 	-> ..proc_find_all_chains_by_length_add_first_vertex (*
 		<- genElStr5;;
@@ -166,15 +172,21 @@ scp_program -> proc_find_chains_by_length (*
 		=> nrel_goto: ..proc_find_all_chains_by_length_call_FIND_ALL_CHAINS;;
 	*);;
 
-	//Оператор вызова программы proc_find_all_chains, которая ищет все простые цепи
+	//Оператор вызова программы proc_find_all_chains, которая ищет все простые цепи между вершинами _begin_vertex и _end_vertex
+	//После этого переходим к оператору ожидания
 	-> ..proc_find_all_chains_by_length_call_FIND_ALL_CHAINS (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_all_chains;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+			//узел графа
 			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+			//Начальная вершина
 			-> rrel_2: rrel_fixed: rrel_scp_var: _begin_vertex;;
-			-> rrel_3: rrel_fixed: rrel_scp_var: _another_vertex;;
+			//Конечная вершина
+			-> rrel_3: rrel_fixed: rrel_scp_var: _end_vertex;;
+			//Простая цепь
 			-> rrel_4: rrel_fixed: rrel_scp_var: _simple_chain;;
+			//Множество непроверенных вершин
 			-> rrel_5: rrel_fixed: rrel_scp_var: _not_checked_vertices;;
 		*);;
 		-> rrel_3: rrel_assign: rrel_scp_var: _descr1;;
@@ -182,7 +194,7 @@ scp_program -> proc_find_chains_by_length (*
 	*);;
 
 	//Оператор ожидания завершения программы proc_find_all_chains
-	//После этого Очистим память и перейдем к нахождению другой конечной вершины
+	//После этого очистим память и перейдем к нахождению другой конечной вершины
 	-> ..proc_find_all_chains_by_length_wait_after_find_all_chains (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr1;;
@@ -200,20 +212,22 @@ scp_program -> proc_find_chains_by_length (*
 	//--------------------------------------Ветвь else во внешнем цикле----------------------------------------
 
 	//Удаление множества всех начальных вершин
-	//Переход к оператору отсеивания лишних вершин
+	//Переход к оператору отсеивания лишних цепей
 	-> ..proc_find_all_chains_by_length_erase_all_begin_vertices (*
 		<- eraseEl;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _all_begin_vertices;;
-		=> nrel_goto: ..proc_find_all_chains_by_length_call_out;; //proc_find_all_chains_by_length_call_sift_chains
+		=> nrel_goto: ..proc_find_all_chains_by_length_call_sift_chains;; 
 	*);;
 
 	//Оператор вызова proc_sift_chains
 	//Вызванная программа отсеивает лишние цепи (у которых длина != _length)
-	/*-> ..proc_find_all_chains_by_length_call_sift_chains (*
+	-> ..proc_find_all_chains_by_length_call_sift_chains (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_sift_chains;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+			//Узел графа
 			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+			//Заданная длина
 			-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
 		*);;
 		-> rrel_3: rrel_assign: rrel_scp_var: _descr2;;
@@ -226,14 +240,15 @@ scp_program -> proc_find_chains_by_length (*
 		<- waitReturn;;
 		-> rrel_1: rrel_fixed: rrel_scp_var: _descr2;;
 		=> nrel_goto: ..proc_find_all_chains_by_length_call_out;;
-	*);;*/
+	*);;
 
 	//Оператор вызова proc_out
-	//Вызванная программа выводит результат
+	//Вызванная программа выводит результат выполнения программы
 	-> ..proc_find_all_chains_by_length_call_out (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_out;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+			//Узел графа
 			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
 		*);;
 		-> rrel_3: rrel_assign: rrel_scp_var: _descr3;;
@@ -249,12 +264,13 @@ scp_program -> proc_find_chains_by_length (*
 	*);;
 
 	//Оператор вызова proc_clear
-	//Вызванная программа очищает память
+	//Вызванная программа очищает память от созданных цепей
 	//После этого переходим к оператору ожидания завершения программы
 	-> ..proc_find_all_chains_by_length_call_clear (*
 		<- call;;
 		-> rrel_1: rrel_fixed: rrel_scp_const: proc_clear;;
 		-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+			//Узел графа
 			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
 		*);;
 		-> rrel_3: rrel_assign: rrel_scp_var: _descr4;;
@@ -277,9 +293,4 @@ scp_program -> proc_find_chains_by_length (*
 	*);;
 
 	*);;
-*);;
-
-
-	
-
-	
+*);;	

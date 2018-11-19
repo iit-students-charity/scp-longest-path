@@ -1,23 +1,27 @@
+
+//Программа вычисления длины цепи
 scp_program -> proc_length (*	
 	-> rrel_params: ... (*
+		//Цепь, длину которой нужно найти
 		-> rrel_1: rrel_in: _chain;;
-		-> rrel_1: rrel_out: _length;;
+		//Длина найденной цепи
+		-> rrel_2: rrel_out: _length;;
 	*);;
 
 	-> rrel_operators: ... (*
 
-		//Инициализация переменной _length, которая хранит длину цепи
+		//Инициализация переменной _length, которая хранит длину цепи (_length=0)
 		//Переход к оператору получения начальной вершины
 		-> rrel_init: ..proc_length_initialize (*
-			<- contAssign;;
+			<- varAssign;;
 			-> rrel_1: rrel_assign: rrel_scp_var: _length;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
-			=> nrel_goto: proc_length_get_first_vertex;;
+			=> nrel_goto: ..proc_length_get_first_vertex;;
 		*);;
 
 		//Оператор нахождения первой вершины в цепи
 		//Если вершина найдена, то переходим к нахождению первой вершины
-		//Если вершина не найдена, то переходим к выходу из программы (но такого быть не может (скорее всего))
+		//Если вершина не найдена, то переходим к выходу из программы (условие невыполнимо)
 		-> ..proc_length_get_first_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _chain;;
@@ -25,63 +29,98 @@ scp_program -> proc_length (*
 			-> rrel_3: rrel_assign: rrel_scp_var: _begin_vertex;;
 			-> rrel_4: rrel_assign: rrel_scp_var: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_next;;
-			=> nrel_then: ..proc_length_find;;
+			=> nrel_then: ..proc_length_find_next_vertex;;
 			=> nrel_else: ..proc_length_return;;
 		*);;
 
-		//Оператор нахождения дуги между двумя вершинами
-		//Если дуга найдена, то переходим к нахождению ее веса
-		//Если дуга не найдена, то переходим к выводу конечного сообщения и выходу из программы
-		-> ..proc_length_find_arc (*
+		//Оператор нахождения следующей вершины
+		//Если вершина найдена, то переходим к нахождению веса
+		//Если в цепи нет больше вершин, выходим из программы (_next_vertex не найдена)
+		-> ..proc_length_find_next_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
 			-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _neccesary_arc;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _next_vertex;;
 			-> rrel_4: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_var: _chain;;
-			=> nrel_then: ..proc_length_get_weight;;
-			=> nrel_else: ..proc_length_print;;
-		*);;
-
-		//Оператор нахождения веса
-		//Если вес найден, то переходим к сложению _length+=_weight
-		//Если вес не найден, то выходим из программы (вряд ли такое может быть)
-		-> ..proc_length_get_weight (*
-			<- searchElStr5;;
-			-> rrel_1: rrel_assign: rrel_scp_const: _weight;;
-			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
-			-> rrel_3: rrel_fixed: rrel_scp_var: _neccesary_arc;;
-			-> rrel_4: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc2;;
-			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_weight;;
-			=> nrel_then: ..proc_length_sum;;
+			=> nrel_then: ..proc_length_get_all_nodes;;
 			=> nrel_else: ..proc_length_return;;
 		*);;
 
-		//Оператор сложения
+		//Оператор поиска всех узлов, идущих к дуге между вершинами
+		//Если множество найдено, то переходим к перебору всех возможных узлов (один из узлов будет весом)
+		//Если множество узлов не найдено, то выходим из программы (условие невыполнимо)
+		-> ..proc_length_get_all_nodes (*
+			<- searchSetStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _neccesary_arc;;
+			-> rrel_3: rrel_fixed: rrel_scp_var: _next_vertex;;
+			-> rrel_4: rrel_assign: rrel_scp_var: rrel_common: _arc2;;
+			-> rrel_5: rrel_assign: rrel_scp_var: _weight;;
+			->rrel_set_5: rrel_assign: rrel_scp_var: _all_nodes;;
+			=> nrel_then: ..proc_length_get_node;;
+			=> nrel_else: ..proc_length_return;;
+		*);;
+
+		//Получение узла
+		//Переход удалению его из множества всех узлов
+		-> ..proc_length_get_node (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _all_nodes;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _deleted_arc;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _weight;;
+			=> nrel_then: ..proc_length_delete_arc;; 
+			=> nrel_else: ..proc_length_return;;
+		*);;
+
+		//Удаление узла из множества
+		//Переход к оператору провер
+		-> ..proc_length_delete_arc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
+			=> nrel_goto: ..proc_length_if_weight;;
+		*);;
+
+		//Оператор проверки (является ли узел _weight весом ребра)
+		//Если является, то находим сумму
+		//Если не является, то переходим к следующему узлу
+		-> ..proc_length_if_weight (*
+			<- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _weight;;
+			-> rrel_2: rrel_assign: rrel_const: rrel_common: rrel_scp_var: _arc1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _weight_value;;
+			-> rrel_4: rrel_assign: rrel_pos: rrel_scp_var: _arc2;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: nrel_system_identifier;;
+			=> nrel_then: ..proc_length_temp;;		
+		 	=> nrel_else: ..proc_length_get_node;;
+		*);;
+
+		//Создание временной переменной, которая равна длине цепи (необходима в процессе вычисления длины цепи)
+		-> ..proc_length_temp (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _temp;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
+			=> nrel_goto: ..proc_length_sum;;
+		*);;
+
+		//Оператор сложения (_temp+_weght_value)
 		//Переход к занесению нового значения в переменную _begin_vertex
 		-> ..proc_length_sum (*
 			<- contAdd;;
 			-> rrel_1: rrel_assign: rrel_scp_var: _length;;
-			-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
-			-> rrel_3: rrel_fixed: rrel_scp_const: _weight;;
-			=> nrel_goto: proc_length_change_value_of_begin_vertex;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _temp;;
+			-> rrel_3: rrel_fixed: rrel_scp_var: _weight_value;;
+			=> nrel_goto: ..proc_length_change_value_of_begin_vertex;;
 		*);;
 
+		//Оператор присвоения нового значения
 		//_begin_vertex = _next_vertex
 		//Переход к оператору получения следующей дуги
 		->..proc_length_change_value_of_begin_vertex (*
 			<-varAssign;;
 			-> rrel_1: rrel_assign: rrel_scp_var: _begin_vertex;;
 			-> rrel_2: rrel_fixed: rrel_scp_var: _next_vertex;;
-			=>nrel_goto: ..proc_length_find_arc;;
-		*);;
-
-		//Оператор вывода сообщения
-		//Затем выход из программы
-		-> ..proc_length_print (*
-			<- printNl;;
-			-> rrel_1: rrel_fixed: rrel_scp_const: [Длина цепи найдена];; 		
-			=> nrel_goto: ..proc_length_return;;	
+			=>nrel_goto: ..proc_length_find_next_vertex;;
 		*);;
 
 		//Оператор return
