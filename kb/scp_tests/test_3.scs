@@ -1,7 +1,0 @@
-directed_graph -> graph3 (*
-  -> rrel_node: V1_3s;;
-
-  -> rrel_edge: (V2_3s => V1_3s);;
-*);;
-
-[1] => (V2_3s => V1_3s);;

@@ -1,82 +1,79 @@
-
-//Программа копирования цепи
+// Программа копирования цепи
 scp_program -> proc_copy_chain (*	
 	-> rrel_params: ... (*
-		//Цепь, из которой нужно скопировать вершины
+		// Цепь, из которой нужно скопировать вершины
 		-> rrel_1: rrel_in: _chain;;
-		//Цепь, в которую нужно скопировать вершины
+		// Цепь, в которую нужно скопировать вершины
 		-> rrel_2: rrel_in: _copy;;
 	*);;
 
 	-> rrel_operators: ... (*
-
-		//Оператор поиска начальной вершины
-		//После этого переходим к добавлению начальной вершины в _copy
-		//Случай, когда не найдена начальная вершина невозможен
-		-> rrel_init: ..proc_copy_chain_find_first_vertex (*
+		// Оператор поиска начальной вершины
+		// После этого переходим к добавлению начальной вершины в _copy
+		// Случай, когда не найдена начальная вершина невозможен
+		-> rrel_init: ..find_first_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _chain;;
 			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _begin_vertex;;
 			-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_next;;
-			=> nrel_then: ..proc_copy_chain_add_first_vertex;;
-			=> nrel_else: ..proc_copy_chain_return;;
+			=> nrel_then: ..add_first_vertex;;
+			=> nrel_else: ..return;;
 		*);;
 
-		//Оператор добавления первой вершины в новую цепь
-		//Переход к следующему оператору (добавление всех остальных вершин)
-		-> ..proc_copy_chain_add_first_vertex (*
+		// Оператор добавления первой вершины в новую цепь
+		// Переход к следующему оператору (добавление всех остальных вершин)
+		-> ..add_first_vertex (*
 			<- genElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _copy;;
 			-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _arc1;;
 			-> rrel_3: rrel_fixed: rrel_scp_var: _begin_vertex;;
 			-> rrel_4: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_next;;
-			=> nrel_goto: ..proc_copy_chain_get_next_vertex;;
+			=> nrel_goto: ..get_next_vertex;;
 		*);;
 
-		//--------------------Цикл перебора вершин в цепи--------------------------------------
+		// --------------------Цикл перебора вершин в цепи--------------------------------------
 
-		//Оператор нахождения следующей вершины в цепи
-		//Если вершина найдена, то переходим к добавлению данной вершины
-		//Если вершина не найдена, то выходим из программы
-		-> ..proc_copy_chain_get_next_vertex (*
+		// Оператор нахождения следующей вершины в цепи
+		// Если вершина найдена, то переходим к добавлению данной вершины
+		// Если вершина не найдена, то выходим из программы
+		-> ..get_next_vertex (*
 			<- searchElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
 			-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _arc1;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _next_vertex;;
 			-> rrel_4: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_var: _chain;;
-			=> nrel_then: ..proc_copy_chain_add_vertex;;
-			=> nrel_else: ..proc_copy_chain_return;;
+			=> nrel_then: ..add_vertex;;
+			=> nrel_else: ..return;;
 		*);;
 
-		//Оператор добавления вершины в цепь
-		-> ..proc_copy_chain_add_vertex (*
+		// Оператор добавления вершины в цепь
+		-> ..add_vertex (*
 			<- genElStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
 			-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _arc1;;
 			-> rrel_3: rrel_fixed: rrel_scp_var: _next_vertex;;
 			-> rrel_4: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_var: _copy;;
-			=> nrel_goto: ..proc_copy_chain_change_value_of_begin_vertex;;
+			=> nrel_goto: ..change_value_of_begin_vertex;;
 		*);;
 
-		//Оператор занесение в _begin_vertex нового значения
-		//_begin_vertex = _next_vertex
-		//Переход к оператору получения следующей вершины
-		->..proc_copy_chain_change_value_of_begin_vertex (*
-			<-varAssign;;
+		// Оператор занесение в _begin_vertex нового значения
+		// _begin_vertex = _next_vertex
+		// Переход к оператору получения следующей вершины
+		->..change_value_of_begin_vertex (*
+			<- varAssign;;
 			-> rrel_1: rrel_assign: rrel_scp_var: _begin_vertex;;
 			-> rrel_2: rrel_fixed: rrel_scp_var: _next_vertex;;
-			=>nrel_goto: ..proc_copy_chain_get_next_vertex;;
+			=> nrel_goto: ..get_next_vertex;;
 		*);;
 
-		//Оператор return
-		-> ..proc_copy_chain_return (*
+		// Оператор return
+		-> ..return (*
 			<- return;;
 		*);;
-
 	*);;
 *);;
