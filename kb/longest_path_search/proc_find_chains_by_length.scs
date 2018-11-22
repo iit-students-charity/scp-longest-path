@@ -21,7 +21,7 @@ scp_program -> proc_find_chains_by_length (*
 		*);;
 
 		// Оператор вывода номера теста
-		// Переход к оператору занесения всех вершин во множество _all_begin_vertices
+		// Переход к оператору создания множества непроверенных вершин
 		-> ..print_test_numbers (*
 			<- printNl;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _test_number;; 		
@@ -60,12 +60,12 @@ scp_program -> proc_find_chains_by_length (*
 			-> rrel_3: rrel_fixed: rrel_scp_var: _begin_vertex;;
 			-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc2;;
 			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_next;;
-			=> nrel_goto: ..call_FIND_ALL_CHAINS;;
+			=> nrel_goto: ..call_find_all_chains;;
 		*);;
 
 		// Оператор вызова программы proc_find_all_chains, которая ищет все простые цепи между вершинами _begin_vertex и _end_vertex
 		// После этого переходим к оператору ожидания
-		-> ..call_FIND_ALL_CHAINS (*
+		-> ..call_find_all_chains (*
 			<- call;;
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_all_chains;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
@@ -85,7 +85,7 @@ scp_program -> proc_find_chains_by_length (*
 		*);;
 
 		// Оператор ожидания завершения программы proc_find_all_chains
-		// После этого очистим память и перейдем к нахождению другой конечной вершины
+		// После этого очистим память
 		-> ..wait_find_all_chains (*
 			<- waitReturn;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _descr1;;
@@ -93,7 +93,7 @@ scp_program -> proc_find_chains_by_length (*
 		*);;
 
 		// Удаление множества всех непроверенных вершин
-		// Переход к оператору нахождения следующей конечной вершины
+		// Переход к созданию узла для максимальной цепи
 		-> ..erase_not_checked_vertices (*
 			<- eraseEl;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _not_checked_vertices;;
@@ -104,12 +104,12 @@ scp_program -> proc_find_chains_by_length (*
 		-> ..create_max_chain (*
 			<- genEl;;
 			-> rrel_1: rrel_assign: rrel_node: rrel_scp_var: _max_chain;;
-			=> nrel_goto: ..call_sift_chains;;
+			=> nrel_goto: ..call_find_max_chain;;
 		*);;
 
-		// Оператор вызова proc_sift_chains
-		// Вызванная программа отсеивает лишние цепи (у которых длина != _length)
-		-> ..call_sift_chains (*
+		// Оператор вызова proc_find_max_chain
+		// Вызванная программа находит максимальную цепь из найденных
+		-> ..call_find_max_chain (*
 			<- call;;
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_sift_chains;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
@@ -119,12 +119,12 @@ scp_program -> proc_find_chains_by_length (*
 				-> rrel_2: rrel_fixed: rrel_scp_var: _max_chain;;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr2;;
-			=> nrel_goto: ..wait_sift_chains;;
+			=> nrel_goto: ..wait_find_max_chain;;
 		*);;
 
-		// Оператор ожидания завершения программы proc_sift_chains
+		// Оператор ожидания завершения программы find_max_chain
 		// После этого переходим к оператору вызова программы proc_out
-		-> ..wait_sift_chains (*
+		-> ..wait_find_max_chain (*
 			<- waitReturn;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _descr2;;
 			=> nrel_goto: ..call_out;;
@@ -136,7 +136,7 @@ scp_program -> proc_find_chains_by_length (*
 			<- call;;
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_out;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
-				// Узел графа
+				// Максимальная цепь
 				-> rrel_1: rrel_fixed: rrel_scp_var: _max_chain;;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr3;;
