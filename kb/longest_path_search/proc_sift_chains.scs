@@ -3,15 +3,24 @@ scp_program -> proc_sift_chains (*
 	-> rrel_params: ... (*
 		// Узел графа
 		-> rrel_1: rrel_in: _graph;;
-		// Заданная цепь (sc-ссылка)
-		-> rrel_2: rrel_in: _neccessary_length;;
+		// Узел для максимальной цепи
+		-> rrel_2: rrel_in: _max_chain;;
 	*);;
 
 	-> rrel_operators: ... (*
+		
+		// Инициализация _max_length нулём
+		-> rrel_init: ..initialize (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _max_length;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+			=> nrel_goto: ..create_all_chains;;
+		*);;
+
 		// Создание множества всех цепей, принадлежащих графу
 		// Если множество непустое, то находим первую цепь
 		// Если множество пустое, то выходим из программы
-		-> rrel_init: ..create_all_chains (*
+		-> ..create_all_chains (*
 			<- searchSetStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
 			-> rrel_2: rrel_assign: rrel_scp_var: _arc1;;
@@ -71,18 +80,56 @@ scp_program -> proc_sift_chains (*
 		-> ..wait (*
 			<- waitReturn;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _descr;;
-			=> nrel_goto: ..if_equals;;
+			=> nrel_goto: ..if_greater;;
 		*);;
 
-		// Сравнение длины цепи и заданной длины
-		// Если они равны, то переходим к сравнению следующей цепи
-		// Если они не равны, то удаляем _chain и переходим к следующей цепи
-		-> ..if_equals (*
-			<- ifEq;;
-			-> rrel_1: rrel_fixed: rrel_scp_var: _neccessary_length;;
-			-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
-			=> nrel_then: ..get_chain;;
+		// Сравнение длины цепи и максимальной длины
+		// Если длина цепи больше максимальной, пеходим к обновлению значения максимальной длины
+		// иначе удаляем цепь
+		-> ..if_greater (*
+			<- ifGr;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _length;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _max_length;;
+			=> nrel_then: ..assign_new_max;;
 			=> nrel_else: ..delete_chain;;
+		*);;
+
+		// _max_length = _length
+		-> ..assign_new_max (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _max_length;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
+			=> nrel_goto: ..check_prev_max_chain;;
+		*);;
+
+		// Проверка на существование цепи в _max_chain
+		// Если есть, удаляем её и переходим к назначению текущей
+		// Если нет, сразу переходим к назначению текущей
+		-> ..check_prev_max_chain (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _max_chain;;
+			-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _max_chain_arc;;			
+			-> rrel_3: rrel_assign: rrel_scp_var: _prev_max_chain;;
+			=> nrel_then: ..delete_prev_max_chain;;
+		 	=> nrel_else: ..assign_new_max_chain;;
+		*);;
+
+		// Удаляем дугу связывающую предыдущую максимальную цепь с _max_chain
+		// Переходим к назначению новой максимальной цепи в _max_chain
+		-> ..delete_prev_max_chain (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _max_chain_arc;;
+			=> nrel_goto: ..assign_new_max_chain;;
+		*);;
+
+		// Заносим новую максимальную цепь в _max_chain
+		// Переходим к проверке следующей
+		-> ..assign_new_max_chain (*
+			<- genElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _max_chain;;
+			-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _max_chain_arc;;
+			-> rrel_3: rrel_fixed: rrel_scp_var: _chain;;
+			=> nrel_goto: ..get_chain;;
 		*);;
 
 		// Удаление цепи _chain и переход к следующей цепи

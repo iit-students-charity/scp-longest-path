@@ -209,7 +209,14 @@ scp_program -> proc_find_chains_by_length (*
 		-> ..erase_all_begin_vertices (*
 			<- eraseEl;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _all_begin_vertices;;
-			=> nrel_goto: ..call_sift_chains;; 
+			=> nrel_goto: ..create_max_chain;; 
+		*);;
+
+		// Создаём узел для хранения максимальной длины
+		-> ..create_max_chain (*
+			<- genEl;;
+			-> rrel_1: rrel_assign: rrel_node: rrel_scp_var: __max_chain;;
+			=> nrel_goto: ..call_sift_chains;;
 		*);;
 
 		// Оператор вызова proc_sift_chains
@@ -220,8 +227,8 @@ scp_program -> proc_find_chains_by_length (*
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				// Узел графа
 				-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
-				// Заданная длина
-				-> rrel_2: rrel_fixed: rrel_scp_var: _length;;
+				// Узел для хранения максимальной длины
+				-> rrel_2: rrel_fixed: rrel_scp_var: __max_chain;;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr2;;
 			=> nrel_goto: ..wait_sift_chains;;
@@ -242,7 +249,7 @@ scp_program -> proc_find_chains_by_length (*
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_out;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				// Узел графа
-				-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+				-> rrel_1: rrel_fixed: rrel_scp_var: __max_chain;;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr3;;
 			=> nrel_goto: ..wait_out;;
