@@ -18,10 +18,12 @@ scp_program -> proc_run_all_tests (*
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				// Имя графа
 				-> rrel_1: rrel_fixed: rrel_scp_const: graph1;;
-				// Длина цепи
-				-> rrel_2: rrel_fixed: rrel_scp_const: [3];;
+				// Начальная вершина
+				-> rrel_2: rrel_fixed: rrel_scp_const: V1_1s;;
+				// Конечная вершина
+				-> rrel_3: rrel_fixed: rrel_scp_const: V4_1s;;
 				// Номер теста
-				-> rrel_3: rrel_fixed: rrel_scp_const: [1];;
+				-> rrel_4: rrel_fixed: rrel_scp_const: [1];;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
 			=> nrel_goto: ..wait_test_1;;
@@ -41,8 +43,9 @@ scp_program -> proc_run_all_tests (*
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				-> rrel_1: rrel_fixed: rrel_scp_const: graph2;;
-				-> rrel_2: rrel_fixed: rrel_scp_const: [5];;
-				-> rrel_3: rrel_fixed: rrel_scp_const: [2];;
+				-> rrel_2: rrel_fixed: rrel_scp_const: V1_2s;;
+				-> rrel_3: rrel_fixed: rrel_scp_const: V3_2s;;
+				-> rrel_4: rrel_fixed: rrel_scp_const: [2];;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
 			=> nrel_goto: ..wait_test_2;;
@@ -59,8 +62,9 @@ scp_program -> proc_run_all_tests (*
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				-> rrel_1: rrel_fixed: rrel_scp_const: graph3;;
-				-> rrel_2: rrel_fixed: rrel_scp_const: [6];;
-				-> rrel_3: rrel_fixed: rrel_scp_const: [3];;
+				-> rrel_2: rrel_fixed: rrel_scp_const: V1_3s;;
+				-> rrel_3: rrel_fixed: rrel_scp_const: V3_3s;;
+				-> rrel_4: rrel_fixed: rrel_scp_const: [3];;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
 			=> nrel_goto: ..wait_test_3;;
@@ -77,8 +81,9 @@ scp_program -> proc_run_all_tests (*
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				-> rrel_1: rrel_fixed: rrel_scp_const: graph4;;
-				-> rrel_2: rrel_fixed: rrel_scp_const: [7];;
-				-> rrel_3: rrel_fixed: rrel_scp_const: [4];;
+				-> rrel_2: rrel_fixed: rrel_scp_const: V1_4s;;
+				-> rrel_3: rrel_fixed: rrel_scp_const: V4_4s;;
+				-> rrel_4: rrel_fixed: rrel_scp_const: [4];;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
 			=> nrel_goto: ..wait_test_4;;
@@ -95,8 +100,9 @@ scp_program -> proc_run_all_tests (*
 			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_chains_by_length;;
 			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
 				-> rrel_1: rrel_fixed: rrel_scp_const: graph5;;
-				-> rrel_2: rrel_fixed: rrel_scp_const: [3];;
-				-> rrel_3: rrel_fixed: rrel_scp_const: [5];;
+				-> rrel_2: rrel_fixed: rrel_scp_const: V1_5s;;
+				-> rrel_3: rrel_fixed: rrel_scp_const: V4_5s;;
+				-> rrel_4: rrel_fixed: rrel_scp_const: [5];;
 			*);;
 			-> rrel_3: rrel_assign: rrel_scp_var: _descr;;
 			=> nrel_goto: ..wait_test_5;;

@@ -138,12 +138,20 @@ scp_program -> proc_sift_chains (*
 			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _chain;;
 			=> nrel_goto: ..get_chain;;	
 		*);;
-
+		
 		// Удаление множества всех вершин
-		// Переход к return
+		// Переход к удалению _max_length
 		-> ..clear (*
 			<- eraseEl;;
 			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _all_chains;;
+			=> nrel_goto: ..return;;	
+		*);;
+
+		// Удаление _max_length
+		// Переход к return
+		-> ..delete_max_length (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _max_length;;
 			=> nrel_goto: ..return;;	
 		*);;
 
