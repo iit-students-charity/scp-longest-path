@@ -1,24 +1,13 @@
-undirected_graph->graph5(*
-	->rrel_node: V1_5s;;
-	->rrel_node: V2_5s;;
-	->rrel_node: V3_5s;;
-	->rrel_node: V4_5s;;
-	->rrel_edge: (V1_5s => V2_5s)(*
-		<=2;;
-	*);;
-	->rrel_edge: (V2_5s => V3_5s)(*
-		<=3;;
-	*);;
-	->rrel_edge: (V3_5s => V4_5s)(*
-		<=2;;
-	*);;
-	->rrel_edge: (V4_5s => V1_5s)(*
-		<=1;;
-	*);;
-	->rrel_edge: (V1_5s => V3_5s)(*
-		<=1;;
-	*);;
-	->rrel_edge: (V2_5s => V4_5s)(*
-		<=3;;
-	*);;
+undirected_graph -> graph5 (*
+	-> rrel_node: V1_5s;;
+	-> rrel_node: V2_5s;;
+	-> rrel_node: V3_5s;;
+	-> rrel_node: V4_5s;;
+
+	-> rrel_edge: (V1_5s => V2_5s) (* <= 2;; *);;
+	-> rrel_edge: (V2_5s => V3_5s) (* <= 3;; *);;
+	-> rrel_edge: (V3_5s => V4_5s) (* <= 2;; *);;
+	-> rrel_edge: (V4_5s => V1_5s) (* <= 1;; *);;
+	-> rrel_edge: (V1_5s => V3_5s) (* <= 1;; *);;
+	-> rrel_edge: (V2_5s => V4_5s) (* <= 3;; *);;
 *);;

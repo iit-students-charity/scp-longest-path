@@ -1,25 +1,13 @@
-directed_graph->graph2(*
-	->rrel_node: V1_2s;;
-	->rrel_node: V2_2s;;
-	->rrel_node: V3_2s;;
-	->rrel_node: V4_2s;;
-	->rrel_edge: (V1_2s => V2_2s)(*
-		<=2;;
-	*);;
-	->rrel_edge: (V2_2s => V3_2s)(*
-		<=7;;
-	*);;
-	->rrel_edge: (V3_2s => V1_2s)(*
-		<=3;;
-	*);;
-	->rrel_edge: (V1_2s => V4_2s)(*
-		<=3;;
-	*);;
-	->rrel_edge: (V4_2s => V3_2s)(*
-		<=1;;
-	*);;
-	->rrel_edge: (V4_2s => V2_2s)(*
-		<=2;;
-	*);;
-*);;
+directed_graph -> graph2 (*
+	-> rrel_node: V1_2s;;
+	-> rrel_node: V2_2s;;
+	-> rrel_node: V3_2s;;
+	-> rrel_node: V4_2s;;
 
+	-> rrel_edge: (V1_2s => V2_2s) (* <= 2;; *);;
+	-> rrel_edge: (V2_2s => V3_2s) (* <= 7;; *);;
+	-> rrel_edge: (V3_2s => V1_2s) (* <= 3;; *);;
+	-> rrel_edge: (V1_2s => V4_2s) (* <= 3;; *);;
+	-> rrel_edge: (V4_2s => V3_2s) (* <= 1;; *);;
+	-> rrel_edge: (V4_2s => V2_2s) (* <= 2;; *);;
+*);;

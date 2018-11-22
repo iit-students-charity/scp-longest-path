@@ -1,18 +1,11 @@
-directed_graph->graph1(*
-	->rrel_node: V1_1s;;
-	->rrel_node: V2_1s;;
-	->rrel_node: V3_1s;;
-	->rrel_node: V4_1s;;
-	->rrel_edge: (V2_1s => V1_1s)(*
-		<=2;;
-	*);;
-	->rrel_edge: (V1_1s => V3_1s)(*
-		<=1;;
-	*);;
-	->rrel_edge: (V2_1s => V3_1s)(*
-		<=3;;
-	*);;
-	->rrel_edge: (V3_1s => V4_1s)(*
-		<=4;;
-	*);;
+directed_graph -> graph1 (*
+	-> rrel_node: V1_1s;;
+	-> rrel_node: V2_1s;;
+	-> rrel_node: V3_1s;;
+	-> rrel_node: V4_1s;;
+	
+	-> rrel_edge: (V2_1s => V1_1s) (* <= 2;; *);;
+	-> rrel_edge: (V1_1s => V3_1s) (* <= 1;; *);;
+	-> rrel_edge: (V2_1s => V3_1s) (* <= 3;; *);;
+	-> rrel_edge: (V3_1s => V4_1s) (* <= 4;; *);;
 *);;
