@@ -1,5 +1,5 @@
-// Программа удаления цепей, длина которых != заданной длине
-scp_program -> proc_sift_chains (*	
+// Программа поиска максимальной цепи
+scp_program -> proc_find_max_chain (*	
 	-> rrel_params: ... (*
 		// Узел графа
 		-> rrel_1: rrel_in: _graph;;
