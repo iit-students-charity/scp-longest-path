@@ -1,5 +1,4 @@
-// Программа поиска всех цепей заданной длины в ориентированном взвешенном графе
-scp_program -> proc_find_chains_by_length (*
+scp_program -> proc_main (*
 	-> rrel_params: ... (*
 		// Узел, содержащий исходный граф
 		-> rrel_1: rrel_in: _graph;;
