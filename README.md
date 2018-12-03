@@ -11,7 +11,7 @@
 | 4 | [./kb/menu/*](./kb/menu/)                                                       | UI элементы, в том числе добавляющие пункт меню "Запуск SCP программы"                |
 | 5 | [./longest_path/\*.*](./longest_path/)                                          | Псевдо-SCP программа                                                                  |
 | 6 | [./longest_path/scp_tests_scgs/*](./longest_path/scp_tests_scgs/)               | Тесты для SCP программы в SCg формате, чтобы их можно было посмотреть глязиками в KBE |
-| 7 | [./longest_path/pseudo-scp_tests_scgs/*](./longest_path/pseudo-scp_tests_scgs/) | Аналогично предыдущему пункту, но для SCP                                             |
+| 7 | [./longest_path/pseudo-scp_tests_scgs/*](./longest_path/pseudo-scp_tests_scgs/) | Аналогично предыдущему пункту, но для псевдо-SCP                                             |
 
 -----------------------------------------------------------------------------------------------------------------
 
