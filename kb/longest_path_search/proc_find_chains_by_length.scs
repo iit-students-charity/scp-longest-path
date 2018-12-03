@@ -12,11 +12,11 @@ scp_program -> proc_find_chains_by_length (*
 	*);;
 
 	-> rrel_operators: ... (*
-		// Начальный оператор (выводит строку ---------- Тест )
+		// Начальный оператор (выводит строку Тест )
 		// Переход к оператору вывода номера теста
 		-> rrel_init: ..start (*
 			<- print;;
-			-> rrel_1: rrel_fixed: rrel_scp_const: [---------- Тест ];;
+			-> rrel_1: rrel_fixed: rrel_scp_const: [Тест ];;
 			=> nrel_goto: ..print_test_numbers;;
 		*);;
 
@@ -32,7 +32,7 @@ scp_program -> proc_find_chains_by_length (*
 		// Если такое множество создано, то переходим к созданию простой цепи, в которую занесем начальную вершину
 		// Условие, когда не будет создано множество непроверенных вершин, невыполнимо
 		-> ..create_set_not_checked_vertices (*
-			 <- searchSetStr5;;
+			<- searchSetStr5;;
 			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
 			-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc1;;
 			-> rrel_3: rrel_assign: rrel_scp_var: _vertex_of_graph;;
