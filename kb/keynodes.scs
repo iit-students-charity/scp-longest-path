@@ -1,0 +1,35 @@
+directed_graph
+=> nrel_main_idtf: [ориентированный граф] (* <- lang_ru;; *);
+=> nrel_main_idtf: [directed graph] (* <- lang_en;; *);;
+
+undirected_graph
+=> nrel_main_idtf: [неориентированный граф] (* <- lang_ru;; *);
+=> nrel_main_idtf: [undirected graph] (* <- lang_en;; *);;
+
+rrel_vertex 
+=> nrel_main_idtf: [вершина'] (* <- lang_ru;; *);
+=> nrel_main_idtf: [vertex'] (* <- lang_en;; *);;
+
+rrel_next
+=> nrel_main_idtf: [cледующий'] (* <- lang_ru;; *);
+=> nrel_main_idtf: [next'] (* <- lang_en;; *);;
+
+rrel_begin
+=> nrel_main_idtf: [начало'] (* <- lang_ru;; *);
+=> nrel_main_idtf: [begin'] (* <- lang_en;; *);;
+
+rrel_cycle 
+=> nrel_main_idtf: [цикл'] (* <- lang_ru;; *);
+=> nrel_main_idtf: [cycle'] (* <- lang_en;; *);;
+
+rrel_weight
+=> nrel_main_idtf: [вес'] (* <- lang_ru;; *);
+=> nrel_main_idtf: [weight'] (* <- lang_en;; *);;
+
+rrel_edge 
+=> nrel_main_idtf: [ребро'] (*  <- lang_ru;; *);
+=> nrel_main_idtf: [edge'] (* <- lang_en;; *);;
+
+rrel_element
+=> nrel_main_idtf: [элемент цикла'] (*  <- lang_ru;; *);
+=> nrel_main_idtf: [element'] (* <- lang_en;; *);;
