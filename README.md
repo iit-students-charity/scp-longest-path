@@ -35,9 +35,9 @@ cp longest_path_search/kb/* kb/
 | 2 | [./kb/scp_tests/*](./kb/scp_tests/)                                             | Тесты для SCP программы                                                               |
 | 3 | [./kb/pseudo-scp_tests/*](./kb/pseudo-scp_tests/)                               | Тесты для псевдо-SCP программы (немного отличаются по формату от SCP тестов)          |
 | 4 | [./kb/menu/*](./kb/menu/)                                                       | UI элементы, в том числе добавляющие пункт меню "Запуск SCP программы"                |
-| 5 | [./longest_path/\*.*](./longest_path/)                                          | Псевдо-SCP программа                                                                  |
-| 6 | [./longest_path/scp_tests_scgs/*](./longest_path/scp_tests_scgs/)               | Тесты для SCP программы в SCg формате, чтобы их можно было посмотреть глязиками в KBE |
-| 7 | [./longest_path/pseudo-scp_tests_scgs/*](./longest_path/pseudo-scp_tests_scgs/) | Аналогично предыдущему пункту, но для псевдо-SCP                                             |
+| 5 | [./longest_path/*](./longest_path/)                                          | Псевдо-SCP программа                                                                  |
+| 6 | [./scgs/scp_tests_scgs/*](./scgs/scp_tests_scgs/)               | Тесты для SCP программы в SCg формате, чтобы их можно было посмотреть глязиками в KBE |
+| 7 | [./scgs/pseudo-scp_tests_scgs/*](./scgs/pseudo-scp_tests_scgs/) | Аналогично предыдущему пункту, но для псевдо-SCP                                             |
 
 -----------------------------------------------------------------------------------------------------------------
 
@@ -47,3 +47,6 @@ cp longest_path_search/kb/* kb/
 * Задание, которое тут выполнено: **поиск максимального пути между двумя узлами ориентированного взвешенного графа.**
 * Этот код — переделанный курсач [этого](https://github.com/Yegor-Ikbaev "Ягор") типа,
 там тоже можно [посмотреть чё как](https://github.com/Yegor-Ikbaev/scp-chains "тык").
+
+**P.S.** Нафига я так запарился?
+**P.P.S.** ИИ норм спецуха
